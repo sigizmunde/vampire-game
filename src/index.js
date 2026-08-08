@@ -34,6 +34,14 @@ document.addEventListener("DOMContentLoaded", () => {
     downButton.addEventListener("click", () => vessel.impulse([0, 1]));
     leftButton.addEventListener("click", () => vessel.impulse([-1, 0]));
     rightButton.addEventListener("click", () => vessel.impulse([1, 0]));
+
+    const flightArea = document.getElementById("flightArea");
+    flightArea.addEventListener("click", (event) => {
+        const rect = flightArea.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        vessel.diversionPoint = [x, y];
+    });
 });
 
 game.start();
