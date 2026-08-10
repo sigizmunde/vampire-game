@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
         vessel.diversionPoint = [x, y];
+        render.renderExplosion([x, y]);
     });
 });
 

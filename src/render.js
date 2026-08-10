@@ -51,7 +51,7 @@ export class Render {
                     objNode,
                     size,
                     ["_", ".", ","],
-                    25 * (variation + 1),
+                    5 * (variation + 1),
                     color,
                     0.8,
                 );
@@ -60,7 +60,7 @@ export class Render {
                     objNode,
                     size,
                     ["|", "\\", "/", "!", ":", "-"],
-                    75 * variation,
+                    15 * variation,
                     color,
                     0.8,
                 );
@@ -122,5 +122,25 @@ export class Render {
         container.style.position = "relative";
         container.style.overflow = "hidden";
         container.style.backgroundColor = colorMap.background;
+    }
+
+    renderExplosion(position, size = 290) {
+        const explosionNode = document.createElement("div");
+        explosionNode.classList.add("explode-animation");
+        explosionNode.style.position = "absolute";
+        explosionNode.style.left = `${position[0]}px`;
+        explosionNode.style.top = `${position[1]}px`;
+        explosionNode.style.width = "290px";
+        explosionNode.style.height = "290px";
+        explosionNode.style.transform = `scale(${size / 290}) translate(-50%, -50%)`;
+        explosionNode.style.pointerEvents = "none";
+        explosionNode.style.zIndex = "1000";
+        document.getElementById(this.nodeId).appendChild(explosionNode);
+
+        setTimeout(() => {
+            if (explosionNode) {
+                explosionNode.remove();
+            }
+        }, 1500);
     }
 }

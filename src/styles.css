@@ -52,3 +52,23 @@ body {
     color: white;
     font-weight: bold;
 }
+
+.explode-animation {
+    width: 290px;
+    height: 290px;
+    background-image: url("./../public/graphics/explosion1.png");
+    background-repeat: no-repeat;
+
+    /* Apply the animation */
+    animation: play-frames 1s steps(11) 1 forwards;
+}
+
+@keyframes play-frames {
+    from {
+        background-position: 0px 0px;
+    }
+    to {
+        /* Shift the background left by the entire width of the image */
+        background-position: -3190px 0px;
+    }
+}
