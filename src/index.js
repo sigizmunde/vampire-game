@@ -1,11 +1,15 @@
 import "./styles.css";
 import { Game } from "./game";
 import { Vessel } from "./vessel";
+import { Render } from "./render";
+import { matrix1 } from "./helpers/mockData/scene";
 
 const game = new Game({ boundaries: [0, 0, window.innerWidth - 50, window.innerHeight - 50] });
 
 const vessel = new Vessel({ position: [100, 100], velocity: [50, 0], id: "vesselNode" });
 game.addVessel(vessel);
+
+const render = new Render("flightArea");
 
 document.addEventListener("keydown", (event) => {
     switch (event.key) {
@@ -23,6 +27,9 @@ document.addEventListener("keydown", (event) => {
             break;
     }
 });
+
+render.convertMatrixToObjects(matrix1);
+render.renderScene();
 
 document.addEventListener("DOMContentLoaded", () => {
     const upButton = document.getElementById("upButton");
