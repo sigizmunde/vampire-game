@@ -29,9 +29,14 @@ document.addEventListener("keydown", (event) => {
 });
 
 render.convertMatrixToObjects(matrix1);
-render.renderScene();
+
+window.addEventListener("resize", () => {
+    render.renderScene();
+});
 
 document.addEventListener("DOMContentLoaded", () => {
+    render.renderScene();
+
     const upButton = document.getElementById("upButton");
     const downButton = document.getElementById("downButton");
     const leftButton = document.getElementById("leftButton");

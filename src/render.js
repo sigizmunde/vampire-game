@@ -1,6 +1,10 @@
 import { randomNormal } from "./helpers/math";
 import { houseAscii1 } from "./helpers/mockData/scene";
 
+// import of the foliage images
+const foliageContext = require.context("./graphics", false, /^\.\/foliage\d+\.png$/);
+const foliage = foliageContext.keys().map((key) => foliageContext(key));
+
 const colorMap = {
     foliage: "#cccccc",
     building: "#888888",
@@ -32,77 +36,6 @@ export class Render {
         this.objects = objects;
     }
 
-    _constructObject({ type, variation, position, size, id }) {
-        const [x, y] = position;
-        const [width, height] = size;
-        const objNode = document.createElement("div");
-        objNode.id = id || `${type}-${variation}-${x}-${y}`;
-        objNode.style.position = "absolute";
-        objNode.style.left = `${x}px`;
-        objNode.style.top = `${y}px`;
-        objNode.style.width = `${width}px`;
-        objNode.style.height = `${height}px`;
-        objNode.style.transform = "translate(-50%, -50%)";
-
-        if (type === "foliage") {
-            const color = colorMap.foliage;
-            if (variation <= 2) {
-                this._generateDitherSymbols(
-                    objNode,
-                    size,
-                    ["_", ".", ","],
-                    5 * (variation + 1),
-                    color,
-                    0.8,
-                );
-            } else {
-                this._generateDitherSymbols(
-                    objNode,
-                    size,
-                    ["|", "\\", "/", "!", ":", "-"],
-                    15 * variation,
-                    color,
-                    0.8,
-                );
-            }
-        }
-
-        if (type === "building") {
-            const color = colorMap.building;
-            this._generateBuilding(objNode, size, variation);
-        }
-
-        return objNode;
-    }
-
-    _generateDitherSymbols(containerNode, size, symbols, count, color, fluctuation) {
-        for (let i = 0; i < count; i++) {
-            const symbolNode = document.createElement("div");
-            symbolNode.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-            symbolNode.style.position = "absolute";
-            symbolNode.style.color = color;
-            symbolNode.style.opacity = `${Math.random() * fluctuation * 0.5 + 0.5}`;
-            symbolNode.style.fontSize = `${size[0] / 5}px`;
-            symbolNode.style.left = `${randomNormal() * size[0] * 2.5}px`;
-            symbolNode.style.top = `${randomNormal() * size[1] * 2.5}px`;
-            containerNode.appendChild(symbolNode);
-        }
-    }
-
-    _generateBuilding(containerNode, size, variation) {
-        const buildingNode = document.createElement("div");
-        buildingNode.style.position = "absolute";
-        buildingNode.style.width = `${size[0] * 0.8}px`;
-        buildingNode.style.height = `${size[1] * 0.8}px`;
-        buildingNode.style.left = `${size[0] * 0.1}px`;
-        buildingNode.style.top = `${size[1] * 0.1}px`;
-        buildingNode.style.color = colorMap.building;
-        buildingNode.style.fontSize = `${size[0] / 18}px`;
-        buildingNode.style.whiteSpace = "pre";
-        buildingNode.textContent = houseAscii1;
-        containerNode.appendChild(buildingNode);
-    }
-
     renderScene() {
         const container = document.getElementById(this.nodeId);
         const sceneSize = container.getBoundingClientRect();
@@ -110,18 +43,56 @@ export class Render {
             sceneSize.width / this.matrixSize[0],
             sceneSize.height / this.matrixSize[1],
         ];
-        // container.innerHTML = "";
-        this.objects.forEach((obj) => {
-            const objNode = this._constructObject({
-                ...obj,
-                position: [obj.cell[0] * sizePerCell[0], obj.cell[1] * sizePerCell[1]],
-                size: sizePerCell,
-            });
-            container.prepend(objNode);
-        });
+
+        this._renderCanvasDecorations(container, sizePerCell, this.objects);
+
         container.style.position = "relative";
         container.style.overflow = "hidden";
         container.style.backgroundColor = colorMap.background;
+    }
+
+    _renderCanvasDecorations(containerNode, sizePerCell, objects) {
+        const obsoleteCanvas = document.getElementById("decorations");
+        if (obsoleteCanvas) {
+            obsoleteCanvas.remove();
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.style.position = "absolute";
+        canvas.id = "decorations";
+        canvas.width = containerNode.clientWidth;
+        canvas.height = containerNode.clientHeight;
+        console.log("width", canvas.width);
+        canvas.style.pointerEvents = "none";
+        // canvas.style.zIndex = "999";
+
+        const ctx = canvas.getContext("2d");
+
+        objects.forEach((obj) => {
+            switch (obj.type) {
+                case "foliage":
+                    this._renderFoliageCell(ctx, obj.variation, obj.cell, sizePerCell);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        containerNode.appendChild(canvas);
+    }
+
+    // note for future optimization - make it draw similar sprites in one pass
+    _renderFoliageCell(context, variation, cell, size) {
+        const x = cell[0] * size[0];
+        const y = cell[1] * size[1];
+        const spriteSize = Math.max(...size) * 3 * (Math.random() * 0.1 + 0.9);
+
+        let image = new Image();
+        image.src = foliage[variation];
+
+        image.onload = () => {
+            context.drawImage(image, x, y, spriteSize, spriteSize);
+        };
     }
 
     renderExplosion(position, size = 290) {
@@ -134,7 +105,7 @@ export class Render {
         explosionNode.style.height = "290px";
         explosionNode.style.transform = `scale(${size / 290}) translate(-50%, -50%)`;
         explosionNode.style.pointerEvents = "none";
-        explosionNode.style.zIndex = "1000";
+        explosionNode.style.zIndex = "99";
         document.getElementById(this.nodeId).appendChild(explosionNode);
 
         setTimeout(() => {
