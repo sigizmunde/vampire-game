@@ -1,7 +1,7 @@
 const decayFactor = 0.9;
-const proximityThreshold = 0.2;
+const proximityThreshold = 1.5;
 const slowdownFactor = 2.9; // higher number leads to "bouncier" adjustment on the point of diversion
-const velocityThreshold = 0.1;
+const velocityThreshold = 1.5;
 
 export class Vessel {
     constructor({ position: [x, y], velocity: [dx, dy], id, ...rest }) {
@@ -29,6 +29,7 @@ export class Vessel {
         if (length < proximityThreshold && currentVelocity < velocityThreshold) {
             this.velocity.dx = 0;
             this.velocity.dy = 0;
+            this.clearDiversionPoint();
             return null;
         }
 
@@ -54,6 +55,10 @@ export class Vessel {
         }
 
         return point;
+    }
+
+    clearDiversionPoint() {
+        this.diversionPoint = null;
     }
 
     update(deltaTime, collisionBoundaries) {
