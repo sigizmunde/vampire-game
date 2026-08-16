@@ -2,7 +2,6 @@ import "./styles.css";
 import { Game } from "./game";
 import { Vessel } from "./vessel";
 import { Render } from "./render";
-import { matrix1 } from "./helpers/mockData/scene";
 
 const game = new Game({ boundaries: [0, 0, window.innerWidth - 50, window.innerHeight - 50] });
 
@@ -28,7 +27,8 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
-render.convertMatrixToObjects(matrix1);
+const matrix = game.generateSceneMatrix();
+render.convertMatrixToObjects(matrix);
 
 window.addEventListener("resize", () => {
     render.renderScene();
