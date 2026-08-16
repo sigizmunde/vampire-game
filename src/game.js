@@ -1,3 +1,7 @@
+const DEFAULT_FOLIAGE_DENSITY = 0.25;
+const DEFAULT_BUILDINGS_DENSITY = 0.02;
+const LINE_CLEARANCE = 3;
+
 export class Game {
     constructor({ boundaries } = {}) {
         this.vessels = [];
@@ -11,8 +15,8 @@ export class Game {
         const size = params?.size ?? [25, 18];
         const [cols, rows] = size;
 
-        const foliageDensity = params?.foliageDensity ?? 0.25;
-        const buildingsDensity = params?.buildingsDensity ?? 0.12;
+        const foliageDensity = params?.foliageDensity ?? DEFAULT_FOLIAGE_DENSITY;
+        const buildingsDensity = params?.buildingsDensity ?? DEFAULT_BUILDINGS_DENSITY;
 
         const grid = Array.from({ length: rows }, () => Array(cols).fill(null));
 
@@ -73,7 +77,7 @@ export class Game {
                 continue;
             }
 
-            grid[y][x] = "b0";
+            grid[y][x] = `b${Math.round(Math.random() * 5)}`;
             count++;
         }
 
@@ -117,7 +121,7 @@ export class Game {
         const rows = grid.length;
         const cols = grid[0].length;
 
-        const minParallelDistance = 3;
+        const minParallelDistance = LINE_CLEARANCE;
 
         for (let i = 0; i < length; i++) {
             const cellX = direction === "h" ? x + i : x;

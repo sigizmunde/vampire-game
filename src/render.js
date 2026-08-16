@@ -2,9 +2,16 @@
 const foliageContext = require.context("./graphics", false, /^\.\/foliage\d+\.png$/);
 const foliage = foliageContext.keys().map((key) => foliageContext(key));
 
+// import of the building images
+const buildingsContext = require.context("./graphics", false, /^\.\/building\d+\.png$/);
+const buildings = buildingsContext.keys().map((key) => buildingsContext(key));
+
 const colorMap = {
     background: "#000000",
 };
+
+const FOLIAGE_SCALE = 3;
+const BUILDING_SCALE = 2;
 
 export class Render {
     constructor(nodeId) {
@@ -67,6 +74,9 @@ export class Render {
                 case "foliage":
                     this._renderFoliageCell(ctx, obj.variation, obj.cell, sizePerCell);
                     break;
+                case "building":
+                    this._renderBuildingCell(ctx, obj.variation, obj.cell, sizePerCell);
+                    break;
                 default:
                     break;
             }
@@ -79,13 +89,43 @@ export class Render {
     _renderFoliageCell(context, variation, cell, size) {
         const x = cell[0] * size[0];
         const y = cell[1] * size[1];
-        const spriteSize = Math.max(...size) * 3 * (Math.random() * 0.1 + 0.9);
+        const spriteSize = Math.max(...size) * FOLIAGE_SCALE * (Math.random() * 0.1 + 0.9);
 
-        let image = new Image();
-        image.src = foliage[variation];
+        const imageSrc = foliage[variation];
+
+        this._renderSprite(imageSrc, context, x, y, spriteSize, spriteSize);
+    }
+
+    _renderBuildingCell(context, variation, cell, size) {
+        const x = cell[0] * size[0];
+        const y = cell[1] * size[1];
+        const spriteSize = Math.max(...size) * BUILDING_SCALE * (Math.random() * 0.1 + 0.9);
+
+        const imageSrc = buildings[variation];
+
+        this._renderSprite(imageSrc, context, x, y, spriteSize, spriteSize);
+
+        // add some foliage nearby
+        const decorSrc = foliage[Math.floor(Math.random() * 3)];
+        const displacementX = ((Math.random() - 0.5) * Math.max(...size) * BUILDING_SCALE) / 2;
+        const displacementY = ((Math.random() - 0.5) * Math.max(...size) * BUILDING_SCALE) / 2;
+
+        this._renderSprite(
+            decorSrc,
+            context,
+            x + displacementX,
+            y + displacementY,
+            spriteSize,
+            spriteSize,
+        );
+    }
+
+    _renderSprite(imageSrc, context, x, y, sizeX, sizeY) {
+        const image = new Image();
+        image.src = imageSrc;
 
         image.onload = () => {
-            context.drawImage(image, x, y, spriteSize, spriteSize);
+            context.drawImage(image, x, y, sizeX, sizeY);
         };
     }
 
