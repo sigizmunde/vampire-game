@@ -1,7 +1,7 @@
-const decayFactor = 0.9;
-const proximityThreshold = 1.5;
-const slowdownFactor = 2.9; // higher number leads to "bouncier" adjustment on the point of diversion
-const velocityThreshold = 1.5;
+const DECAY_FACTOR = 0.9;
+const PROXIMITY_THRESHOLD = 1.5;
+const SLOWDOWN_FACTOR = 2.9; // higher number leads to "bouncier" adjustment on the point of diversion
+const VELOCITY_THRESHOLD = 1.5;
 
 export class Vessel {
     constructor({ position: [x, y], velocity: [dx, dy], id, ...rest }) {
@@ -26,7 +26,7 @@ export class Vessel {
 
         const currentVelocity = Math.sqrt(this.velocity.dx ** 2 + this.velocity.dy ** 2);
 
-        if (length < proximityThreshold && currentVelocity < velocityThreshold) {
+        if (length < PROXIMITY_THRESHOLD && currentVelocity < VELOCITY_THRESHOLD) {
             this.velocity.dx = 0;
             this.velocity.dy = 0;
             this.clearDiversionPoint();
@@ -36,7 +36,7 @@ export class Vessel {
         const directionX = lengthX / length;
         const directionY = lengthY / length;
 
-        const desiredVelocity = Math.min(this.maxVelocity, length * slowdownFactor);
+        const desiredVelocity = Math.min(this.maxVelocity, length * SLOWDOWN_FACTOR);
 
         const desiredVelocityX = directionX * desiredVelocity;
         const desiredVelocityY = directionY * desiredVelocity;
@@ -62,8 +62,8 @@ export class Vessel {
     }
 
     update(deltaTime, collisionBoundaries) {
-        this.velocity.dx *= decayFactor ** deltaTime;
-        this.velocity.dy *= decayFactor ** deltaTime;
+        this.velocity.dx *= DECAY_FACTOR ** deltaTime;
+        this.velocity.dy *= DECAY_FACTOR ** deltaTime;
         this.position.x += this.velocity.dx * deltaTime;
         this.position.y += this.velocity.dy * deltaTime;
         if (collisionBoundaries) {
@@ -100,6 +100,7 @@ export class Vessel {
         if (vesselElement) {
             vesselElement.style.left = `${this.position.x}px`;
             vesselElement.style.top = `${this.position.y}px`;
+            vesselElement.style.zIndex = "999";
         }
     }
 }

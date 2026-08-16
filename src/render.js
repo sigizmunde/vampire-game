@@ -1,14 +1,8 @@
-import { randomNormal } from "./helpers/math";
-import { houseAscii1 } from "./helpers/mockData/scene";
-
 // import of the foliage images
 const foliageContext = require.context("./graphics", false, /^\.\/foliage\d+\.png$/);
 const foliage = foliageContext.keys().map((key) => foliageContext(key));
 
 const colorMap = {
-    foliage: "#cccccc",
-    building: "#888888",
-    signature: "#ffffff",
     background: "#000000",
 };
 
