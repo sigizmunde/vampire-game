@@ -97,7 +97,7 @@ export class Render {
         explosionNode.style.top = `${position[1]}px`;
         explosionNode.style.width = "290px";
         explosionNode.style.height = "290px";
-        explosionNode.style.transform = `scale(${size / 290}) translate(-50%, -50%)`;
+        explosionNode.style.transform = `scale(${size / 290}) translate(-50%, -75%)`;
         explosionNode.style.pointerEvents = "none";
         explosionNode.style.zIndex = "99";
         document.getElementById(this.nodeId).appendChild(explosionNode);

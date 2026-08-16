@@ -51,6 +51,7 @@ body {
     justify-content: center;
     color: white;
     font-weight: bold;
+    transform: translate(-50%, -100%);
 }
 
 .explode-animation {
@@ -59,7 +60,6 @@ body {
     background-image: url("./../public/graphics/explosion1.png");
     background-repeat: no-repeat;
 
-    /* Apply the animation */
     animation: play-frames 1s steps(11) 1 forwards;
 }
 
@@ -68,7 +68,6 @@ body {
         background-position: 0px 0px;
     }
     to {
-        /* Shift the background left by the entire width of the image */
         background-position: -3190px 0px;
     }
 }
