@@ -6,11 +6,13 @@ const foliage = foliageContext.keys().map((key) => foliageContext(key));
 const buildingsContext = require.context("./graphics", false, /^\.\/building\d+\.png$/);
 const buildings = buildingsContext.keys().map((key) => buildingsContext(key));
 
-const colorMap = {
+const generalTexture = require("./graphics/general_texture.png");
+
+const COLOR_MAP = {
     background: "#000000",
 };
 
-const FOLIAGE_SCALE = 3;
+const FOLIAGE_SCALE = 2;
 const BUILDING_SCALE = 2;
 
 export class Render {
@@ -29,7 +31,20 @@ export class Render {
                     const type =
                         code[0] === "f" ? "foliage" : code[0] === "b" ? "building" : "unknown";
                     const variation = parseInt(code.slice(1), 10);
-                    objects.push({ type, variation, cell: [x, y] });
+
+                    // detecting foliage in the nearest bordering cells
+                    const nearestFoliage = Array.from({ length: 3 }, () => Array(3).fill(null));
+                    for (let dy = -1; dy <= 1; dy++) {
+                        for (let dx = -1; dx <= 1; dx++) {
+                            if (dy === 0 && dx === 0) continue;
+                            const neighbour = matrix[y + dy]?.[x + dx] ?? null;
+                            if (neighbour && neighbour[0] === "f") {
+                                nearestFoliage[dy + 1][dx + 1] = parseInt(neighbour.slice(1), 10);
+                            }
+                        }
+                    }
+
+                    objects.push({ type, variation, nearestFoliage, cell: [x, y] });
                 }
             }
         }
@@ -49,7 +64,7 @@ export class Render {
 
         container.style.position = "relative";
         container.style.overflow = "hidden";
-        container.style.backgroundColor = colorMap.background;
+        container.style.backgroundColor = COLOR_MAP.background;
     }
 
     _renderCanvasDecorations(containerNode, sizePerCell, objects) {
@@ -69,10 +84,19 @@ export class Render {
 
         const ctx = canvas.getContext("2d");
 
+        // render background texture
+        this._renderGeneralTexture(ctx, [canvas.width, canvas.height], [48, 48]);
+
         objects.forEach((obj) => {
             switch (obj.type) {
                 case "foliage":
-                    this._renderFoliageCell(ctx, obj.variation, obj.cell, sizePerCell);
+                    this._renderFoliageCell(
+                        ctx,
+                        obj.variation,
+                        obj.nearestFoliage,
+                        obj.cell,
+                        sizePerCell,
+                    );
                     break;
                 case "building":
                     this._renderBuildingCell(ctx, obj.variation, obj.cell, sizePerCell);
@@ -85,15 +109,56 @@ export class Render {
         containerNode.appendChild(canvas);
     }
 
+    _renderGeneralTexture(context, generalSize, textureSize) {
+        const textureWidth = textureSize[0];
+        const textureHeight = textureSize[1];
+        const n = Math.ceil(generalSize[0] / textureWidth);
+        const m = Math.ceil(generalSize[1] / textureHeight);
+
+        const textureImage = new Image();
+        textureImage.src = generalTexture;
+
+        textureImage.onload = () => {
+            for (let i = 0; i < n; i++) {
+                for (let j = 0; j < m; j++) {
+                    context.drawImage(
+                        textureImage,
+                        i * textureWidth,
+                        j * textureHeight,
+                        textureWidth,
+                        textureHeight,
+                    );
+                }
+            }
+        };
+    }
+
     // note for future optimization - make it draw similar sprites in one pass
-    _renderFoliageCell(context, variation, cell, size) {
+    _renderFoliageCell(context, variation, nearestFoliage, cell, size) {
         const x = cell[0] * size[0];
         const y = cell[1] * size[1];
-        const spriteSize = Math.max(...size) * FOLIAGE_SCALE * (Math.random() * 0.1 + 0.9);
+        const spriteSize = Math.max(...size) * FOLIAGE_SCALE * (Math.random() * 0.3 + 0.6);
 
         const imageSrc = foliage[variation];
 
         this._renderSprite(imageSrc, context, x, y, spriteSize, spriteSize);
+
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                const neighbourVariation = nearestFoliage[dy + 1][dx + 1] ?? 0;
+                if (neighbourVariation) {
+                    const neighbourSrc = foliage[Math.round((variation + neighbourVariation) / 2)];
+                    this._renderSprite(
+                        neighbourSrc,
+                        context,
+                        x + dx * size[0] * 0.5,
+                        y + dy * size[1] * 0.5,
+                        spriteSize,
+                        spriteSize,
+                    );
+                }
+            }
+        }
     }
 
     _renderBuildingCell(context, variation, cell, size) {
