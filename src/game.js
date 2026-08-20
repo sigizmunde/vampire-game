@@ -55,7 +55,9 @@ export class Game {
 
                 const cellY = direction === "v" ? y + i : y;
 
-                grid[cellY][cellX] = "f5";
+                const density = Math.min(i, lineLength - i, 6);
+
+                grid[cellY][cellX] = `f${density + 3}`;
                 count++;
 
                 if (count >= foliageCount) {
