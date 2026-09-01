@@ -1,3 +1,5 @@
+import { bitmapImage } from "./helpers/canvas";
+
 // import of the foliage images
 const foliageContext = require.context("./graphics", false, /^\.\/foliage\d+\.png$/);
 const foliage = foliageContext.keys().map((key) => foliageContext(key));
@@ -133,6 +135,10 @@ export class Render {
             }
         });
 
+        // apply bitmap effect
+        bitmapImage(ctx, 1);
+
+        // mount canvas
         containerNode.appendChild(canvas);
     }
 
