@@ -16,6 +16,7 @@ export function pixelateImage(context, scale) {
     tempCanvas.width = width / scale;
     tempCanvas.height = height / scale;
     const tempContext = tempCanvas.getContext("2d");
+    tempContext.imageSmoothingEnabled = false;
 
     // Draw the original image onto the temporary canvas
     tempContext.drawImage(context.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
@@ -32,7 +33,6 @@ export function bitmapImage(context, scale = 1) {
     tempCanvas.width = width / (scale * 4);
     tempCanvas.height = height / (scale * 4);
     const tempContext = tempCanvas.getContext("2d");
-    tempContext.imageSmoothingEnabled = false;
 
     // // Draw the original image onto the temporary canvas
     tempContext.drawImage(context.canvas, 0, 0, tempCanvas.width, tempCanvas.height);
