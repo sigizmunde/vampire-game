@@ -8,7 +8,7 @@ const game = new Game({ boundaries: [0, 0, window.innerWidth - 50, window.innerH
 const vessel = new Vessel({ position: [100, 100], velocity: [50, 0], id: "vesselNode" });
 game.addVessel(vessel);
 
-const render = new Render("flightArea");
+const render = game.renderer;
 
 document.addEventListener("keydown", (event) => {
     switch (event.key) {

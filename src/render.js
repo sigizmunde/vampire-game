@@ -1,4 +1,5 @@
-import { bitmapImage } from "./helpers/canvas";
+import { bitmapImage, drawEnemySprite } from "./helpers/canvas";
+import { createHtmlElement } from "./helpers/html";
 
 // import of the foliage images
 const foliageContext = require.context("./graphics", false, /^\.\/foliage\d+\.png$/);
@@ -211,6 +212,31 @@ export class Render {
         // returns promise
         await image.decode();
         return image;
+    }
+
+    renderEnemy(id, position, size) {
+        const enemyNode =
+            document.getElementById(id) ||
+            createHtmlElement(document.getElementById(this.nodeId), "canvas", {
+                id: id,
+                class: "enemy",
+                width: size,
+                height: size,
+                style: {
+                    position: "absolute",
+                    left: `${position[0]}px`,
+                    top: `${position[1]}px`,
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    transform: `translate(-50%, -50%)`,
+                    pointerEvents: "none",
+                    zIndex: "9",
+                },
+            });
+        const currentSecond = Math.floor(Date.now() / 1000);
+        const frame = currentSecond % 3;
+        const ctx = enemyNode.getContext("2d");
+        drawEnemySprite(ctx, size, frame);
     }
 
     renderExplosion(position, size = 290) {

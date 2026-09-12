@@ -1,3 +1,5 @@
+import { Render } from "./render";
+
 const DEFAULT_FOLIAGE_DENSITY = 0.25;
 const DEFAULT_BUILDINGS_DENSITY = 0.02;
 const LINE_CLEARANCE = 3;
@@ -5,10 +7,17 @@ const LINE_CLEARANCE = 3;
 export class Game {
     constructor({ boundaries } = {}) {
         this.vessels = [];
+        this.enemies = [];
         this.running = false;
+        this.renderer = new Render("flightArea");
         this.lastUpdated = performance.now();
         this.boundaries = boundaries || [0, 0, window.innerWidth, window.innerHeight];
         console.log("Game initialized with boundaries:", this.boundaries);
+
+        // creating enemies on start
+        for (let i = 0; i < 5; i++) {
+            this.createEnemy();
+        }
     }
 
     generateSceneMatrix(params) {
@@ -90,6 +99,16 @@ export class Game {
         this.vessels.push(vessel);
     }
 
+    createEnemy() {
+        const enemyObject = {
+            id: `enemy-${this.enemies.length}`,
+            position: [Math.random() * this.boundaries[2], Math.random() * this.boundaries[3]],
+            active: true,
+            masked: false,
+        };
+        this.enemies.push(enemyObject);
+    }
+
     start() {
         this.running = true;
         requestAnimationFrame(this.loop.bind(this));
@@ -114,6 +133,9 @@ export class Game {
     }
 
     render() {
+        for (const enemy of this.enemies) {
+            this.renderer.renderEnemy(enemy.id, enemy.position, 6);
+        }
         for (const vessel of this.vessels) {
             vessel.render();
         }

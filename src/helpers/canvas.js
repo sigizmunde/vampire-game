@@ -99,3 +99,28 @@ function canvasContextToBitmap(ctx, ditherMatrix, colorMap) {
 
     ctx.putImageData(outImage, 0, 0);
 }
+
+export function drawEnemySprite(ctx, size, frame) {
+    const sprite = ctx.createImageData(size, size);
+    const data = sprite.data;
+
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            if (
+                (y < (size * 2) / 3 && x > size / 3 && x < (size * 2) / 3) ||
+                (y >= (size * 2) / 3 && frame % 3 === Math.min(2, Math.floor(x / (size / 3))))
+            ) {
+                const index = (y * size + x) * 4;
+                data[index] = 255; // Red
+                data[index + 1] = 255; // Green
+                data[index + 2] = 255; // Blue
+                data[index + 3] = 255; // Alpha
+            } else {
+                const index = (y * size + x) * 4;
+                data[index + 3] = 0; // Alpha
+            }
+        }
+    }
+
+    ctx.putImageData(sprite, 0, 0);
+}
