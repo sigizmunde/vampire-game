@@ -23,6 +23,20 @@ export function createHtmlElement(parentNode, tag, attributes = {}, children = [
 
 export function createModal(parentNode, title, content, onClose) {
     const modalOverlay = createHtmlElement(parentNode, "div", { class: "modal-overlay" });
+
+    // Consume events inside the modal
+    modalOverlay.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+
+    modalOverlay.addEventListener("mousedown", (event) => {
+        event.stopPropagation();
+    });
+
+    modalOverlay.addEventListener("mouseup", (event) => {
+        event.stopPropagation();
+    });
+
     const modal = createHtmlElement(modalOverlay, "div", {
         class: "modal",
         id: "modal",
@@ -42,6 +56,7 @@ export function createModal(parentNode, title, content, onClose) {
 
     createHtmlElement(modal, "h2", {}, [title]);
     createHtmlElement(modal, "p", {}, [content]);
+
     const closeButton = createHtmlElement(modal, "button", { class: "close-button" }, ["Close"]);
     closeButton.addEventListener("click", () => {
         modalOverlay.remove();
