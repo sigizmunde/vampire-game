@@ -19,11 +19,11 @@ const FOLIAGE_SCALE = 2;
 const BUILDING_SCALE = 2;
 
 export class Render {
-    constructor(nodeId) {
+    constructor(nodeId, gameInstance = null) {
         this.nodeId = nodeId;
         this.objects = [];
         this.matrixSize = [10, 10]; // Default size, can be adjusted
-        this.gameInstance = null; // Render class will hold a reference to the Game instance (bidirectional reference)
+        this.gameInstance = gameInstance; // Render class will hold a reference to the Game instance (bidirectional reference)
     }
 
     showMenu() {
