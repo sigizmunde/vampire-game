@@ -10,6 +10,7 @@ export class Game {
         this.enemies = [];
         this.running = false;
         this.renderer = new Render("flightArea");
+        this.renderer.gameInstance = this; // Assigning the Game instance to the Render instance (bidirectional reference)
         this.lastUpdated = performance.now();
         this.boundaries = boundaries || [0, 0, window.innerWidth, window.innerHeight];
         console.log("Game initialized with boundaries:", this.boundaries);
@@ -111,7 +112,13 @@ export class Game {
 
     start() {
         this.running = true;
+        this.lastUpdated = performance.now();
         requestAnimationFrame(this.loop.bind(this));
+    }
+
+    stop() {
+        this.running = false;
+        this.renderer.showMenu();
     }
 
     loop(time) {

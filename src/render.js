@@ -1,5 +1,5 @@
 import { bitmapImage, drawEnemySprite } from "./helpers/canvas";
-import { createHtmlElement } from "./helpers/html";
+import { createHtmlElement, createModal } from "./helpers/html";
 
 // import of the foliage images
 const foliageContext = require.context("./graphics", false, /^\.\/foliage\d+\.png$/);
@@ -23,6 +23,20 @@ export class Render {
         this.nodeId = nodeId;
         this.objects = [];
         this.matrixSize = [10, 10]; // Default size, can be adjusted
+        this.gameInstance = null; // Render class will hold a reference to the Game instance (bidirectional reference)
+    }
+
+    showMenu() {
+        const menu = createModal(
+            document.getElementById(this.nodeId),
+            "Pause",
+            "Click to continue",
+            () => {
+                if (this.gameInstance) {
+                    this.gameInstance.start();
+                }
+            },
+        );
     }
 
     convertMatrixToObjects(matrix) {

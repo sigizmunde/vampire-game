@@ -1,7 +1,6 @@
 import "./styles.css";
 import { Game } from "./game";
 import { Vessel } from "./vessel";
-import { Render } from "./render";
 
 const game = new Game({ boundaries: [0, 0, window.innerWidth - 50, window.innerHeight - 50] });
 
@@ -23,6 +22,9 @@ document.addEventListener("keydown", (event) => {
             break;
         case "ArrowRight":
             vessel.impulse([1, 0]);
+            break;
+        case "Escape":
+            game.stop();
             break;
     }
 });
