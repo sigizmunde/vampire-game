@@ -34,15 +34,17 @@ export function createRandomGenerator(pdf, min = 0, max = 1, samples = 1000) {
     return function () {
         const r = Math.random() * total;
 
-        // binary search could be used here
         let low = 0;
         let high = cumulative.length - 1;
 
         while (low < high) {
             const mid = Math.floor((low + high) / 2);
 
-            if (cumulative[mid] < r) low = mid + 1;
-            else high = mid;
+            if (cumulative[mid] < r) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
         }
 
         return min + ((max - min) * low) / (samples - 1);
