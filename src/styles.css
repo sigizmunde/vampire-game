@@ -19,6 +19,11 @@ body {
     overflow: hidden;
 }
 
+/* #flightArea {
+    transform-origin: center;
+    transform: perspective(800px) rotateX(50deg) rotateZ(-10deg) skewX(5deg);
+} */
+
 .controls {
     position: absolute;
     bottom: 20px;
@@ -70,4 +75,10 @@ body {
     to {
         background-position: -3190px 0px;
     }
+}
+
+.modal-content {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #333;
 }

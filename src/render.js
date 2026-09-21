@@ -1,5 +1,5 @@
 import { bitmapImage, drawEnemySprite } from "./helpers/canvas";
-import { createHtmlElement, createModal } from "./helpers/html";
+import { createButton, createHtmlElement, createModal } from "./helpers/html";
 
 // import of the foliage images
 const foliageContext = require.context("./graphics", false, /^\.\/foliage\d+\.png$/);
@@ -27,16 +27,29 @@ export class Render {
     }
 
     showMenu() {
-        const menu = createModal(
-            document.getElementById(this.nodeId),
-            "Pause",
-            "Click to continue",
-            () => {
-                if (this.gameInstance) {
-                    this.gameInstance.start();
+        if (!this.menu) {
+            const menuContainer = createHtmlElement(null, "div", {});
+            createButton(menuContainer, "Play new Game", () => {
+                this.gameInstance.initializeNewGame();
+                this.gameInstance.run();
+                if (this.menu) {
+                    this.menu.remove();
                 }
-            },
-        );
+                this.menu = null;
+            });
+
+            this.menu = createModal(
+                document.getElementById(this.nodeId),
+                "Pause",
+                [menuContainer],
+                () => {
+                    this.menu = null;
+                    if (this.gameInstance) {
+                        this.gameInstance.run();
+                    }
+                },
+            );
+        }
     }
 
     convertMatrixToObjects(matrix) {

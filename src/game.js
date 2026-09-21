@@ -1,4 +1,5 @@
 import { Render } from "./render";
+import { Vessel } from "./vessel";
 
 const DEFAULT_FOLIAGE_DENSITY = 0.25;
 const DEFAULT_BUILDINGS_DENSITY = 0.02;
@@ -6,18 +7,39 @@ const LINE_CLEARANCE = 3;
 
 export class Game {
     constructor({ boundaries } = {}) {
+        this.renderer = new Render("flightArea", this); // Pass the Game instance to the Render class (bidirectional reference)
+        this.boundaries = boundaries || [0, 0, window.innerWidth, window.innerHeight];
+
+        this.initializeNewGame();
+
+        console.log("Game initialized with boundaries:", this.boundaries);
+    }
+
+    initializeNewGame() {
         this.vessels = [];
         this.enemies = [];
         this.running = false;
-        this.renderer = new Render("flightArea", this); // Pass the Game instance to the Render class (bidirectional reference)
         this.lastUpdated = performance.now();
-        this.boundaries = boundaries || [0, 0, window.innerWidth, window.innerHeight];
-        console.log("Game initialized with boundaries:", this.boundaries);
+
+        const matrix = this.generateSceneMatrix();
+        this.renderer.convertMatrixToObjects(matrix);
+        this.renderer.renderScene();
+        const vessel = new Vessel({ position: [100, 100], velocity: [50, 0], id: "vesselNode" });
+        this.addVessel(vessel);
 
         // creating enemies on start
         for (let i = 0; i < 5; i++) {
             this.createEnemy();
         }
+
+        const flightArea = document.getElementById("flightArea");
+        flightArea.addEventListener("click", (event) => {
+            const rect = flightArea.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            vessel.diversionPoint = [x, y];
+            this.renderer.renderExplosion([x, y]);
+        });
     }
 
     generateSceneMatrix(params) {
@@ -109,13 +131,13 @@ export class Game {
         this.enemies.push(enemyObject);
     }
 
-    start() {
+    run() {
         this.running = true;
         this.lastUpdated = performance.now();
         requestAnimationFrame(this.loop.bind(this));
     }
 
-    stop() {
+    pause() {
         this.running = false;
         this.renderer.showMenu();
     }

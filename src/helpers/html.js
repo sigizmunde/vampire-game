@@ -17,11 +17,15 @@ export function createHtmlElement(parentNode, tag, attributes = {}, children = [
             element.appendChild(child);
         }
     });
-    parentNode.appendChild(element);
+
+    if (parentNode) {
+        parentNode.appendChild(element);
+    }
+
     return element;
 }
 
-export function createModal(parentNode, title, content, onClose) {
+export function createModal(parentNode, title, children, onClose) {
     const modalOverlay = createHtmlElement(parentNode, "div", { class: "modal-overlay" });
 
     // Consume events inside the modal
@@ -55,11 +59,19 @@ export function createModal(parentNode, title, content, onClose) {
     });
 
     createHtmlElement(modal, "h2", {}, [title]);
-    createHtmlElement(modal, "p", {}, [content]);
+    createHtmlElement(modal, "div", { class: "modal-content" }, children);
 
     const closeButton = createHtmlElement(modal, "button", { class: "close-button" }, ["Close"]);
     closeButton.addEventListener("click", () => {
         modalOverlay.remove();
         if (onClose) onClose();
     });
+
+    return modalOverlay;
+}
+
+export function createButton(parentNode, label, onClick, attributes = {}) {
+    const button = createHtmlElement(parentNode, "button", { ...attributes }, [label]);
+    button.addEventListener("click", onClick);
+    return button;
 }
