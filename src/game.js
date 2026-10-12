@@ -42,6 +42,8 @@ export class Game {
             const y = event.clientY - rect.top;
             vessel.diversionPoint = [x, y];
             this.renderer.renderExplosion([x, y]);
+
+            this.messenger.postMessage(`New diversion point [${x}, ${y}] acquired`);
         });
 
         this.messenger.postMessage("Game started");
