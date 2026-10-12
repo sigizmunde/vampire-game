@@ -1,3 +1,4 @@
+import { Messenger } from "./messenger";
 import { Render } from "./render";
 import { Vessel } from "./vessel";
 
@@ -8,6 +9,7 @@ const LINE_CLEARANCE = 3;
 export class Game {
     constructor({ boundaries } = {}) {
         this.renderer = new Render("flightArea", this); // Pass the Game instance to the Render class (bidirectional reference)
+        this.messenger = new Messenger();
         this.boundaries = boundaries || [0, 0, window.innerWidth, window.innerHeight];
 
         this.initializeNewGame();
@@ -20,6 +22,7 @@ export class Game {
         this.enemies = [];
         this.running = false;
         this.lastUpdated = performance.now();
+        this.messenger.clearMessages();
 
         const matrix = this.generateSceneMatrix();
         this.renderer.convertMatrixToObjects(matrix);
@@ -40,6 +43,8 @@ export class Game {
             vessel.diversionPoint = [x, y];
             this.renderer.renderExplosion([x, y]);
         });
+
+        this.messenger.postMessage("Game started");
     }
 
     generateSceneMatrix(params) {
@@ -129,6 +134,8 @@ export class Game {
             masked: false,
         };
         this.enemies.push(enemyObject);
+
+        this.messenger.postMessage(`Enemy ${enemyObject.id} created`);
     }
 
     run() {
