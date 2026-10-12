@@ -41,6 +41,7 @@ export class Messenger {
         const newLine = createHtmlElement(null, "p");
         newLine.innerText = message + "[" + type + "]";
         this.messengerNode.appendChild(newLine);
+        newLine.scrollIntoView({ block: "end" });
     }
 
     renderMessages() {
@@ -49,6 +50,7 @@ export class Messenger {
             const newLine = createHtmlElement(null, "p");
             newLine.innerText = message + "[" + type + "]";
             this.messengerNode.appendChild(newLine);
+            newLine.scrollIntoView({ block: "end" });
         });
     }
 }
