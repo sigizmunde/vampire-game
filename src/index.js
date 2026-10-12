@@ -14,16 +14,16 @@ const game = new Game({ boundaries: [0, 0, window.innerWidth - 50, window.innerH
 document.addEventListener("keydown", (event) => {
     switch (event.key) {
         case "ArrowUp":
-            vessel.impulse([0, -1]);
+            game.vessels[0]?.impulse([0, -1]);
             break;
         case "ArrowDown":
-            vessel.impulse([0, 1]);
+            game.vessels[0]?.impulse([0, 1]);
             break;
         case "ArrowLeft":
-            vessel.impulse([-1, 0]);
+            game.vessels[0]?.impulse([-1, 0]);
             break;
         case "ArrowRight":
-            vessel.impulse([1, 0]);
+            game.vessels[0]?.impulse([1, 0]);
             break;
         case "Escape":
             game.pause();
@@ -40,10 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const leftButton = document.getElementById("leftButton");
     const rightButton = document.getElementById("rightButton");
 
-    upButton.addEventListener("click", () => vessel.impulse([0, -1]));
-    downButton.addEventListener("click", () => vessel.impulse([0, 1]));
-    leftButton.addEventListener("click", () => vessel.impulse([-1, 0]));
-    rightButton.addEventListener("click", () => vessel.impulse([1, 0]));
+    upButton.addEventListener("click", () => game.vessels[0]?.impulse([0, -1]));
+    downButton.addEventListener("click", () => game.vessels[0]?.impulse([0, 1]));
+    leftButton.addEventListener("click", () => game.vessels[0]?.impulse([-1, 0]));
+    rightButton.addEventListener("click", () => game.vessels[0]?.impulse([1, 0]));
 });
 
 //-------------------------
