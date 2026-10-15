@@ -17,6 +17,7 @@ const COLOR_MAP = {
 
 const FOLIAGE_SCALE = 2;
 const BUILDING_SCALE = 2;
+const FOG_TILE_SIZE = 2;
 
 export class Render {
     constructor(nodeId, gameInstance = null) {
@@ -24,6 +25,16 @@ export class Render {
         this.objects = [];
         this.matrixSize = [10, 10]; // Default size, can be adjusted
         this.gameInstance = gameInstance; // Render class will hold a reference to the Game instance (bidirectional reference)
+        this.fogCenter = null;
+    }
+
+    setFogCenter([x, y]) {
+        this.fogCenter = [x, y];
+        const fogCanvas = document.getElementById("fog-of-war");
+        if (fogCanvas) {
+            fogCanvas.style.setProperty("--fog-center-x", `${x}px`);
+            fogCanvas.style.setProperty("--fog-center-y", `${y}px`);
+        }
     }
 
     showMenu() {
@@ -92,6 +103,8 @@ export class Render {
 
         // this is an async function, it starts rendering the canvas decorations and does not block the main thread
         this._renderCanvasDecorations(container, sizePerCell, this.objects);
+
+        this._renderFogOfWar(container);
 
         container.style.position = "relative";
         container.style.overflow = "hidden";
@@ -167,6 +180,38 @@ export class Render {
         bitmapImage(ctx, 1);
 
         // mount canvas
+        containerNode.appendChild(canvas);
+    }
+
+    _renderFogOfWar(containerNode) {
+        // remove existing canvas
+        const obsoleteCanvas = document.getElementById("fog-of-war");
+        if (obsoleteCanvas) {
+            obsoleteCanvas.remove();
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.id = "fog-of-war";
+        canvas.className = "fog-of-war";
+        canvas.width = containerNode.clientWidth;
+        canvas.height = containerNode.clientHeight;
+        canvas.setAttribute("aria-hidden", "true");
+
+        const context = canvas.getContext("2d");
+        for (let y = 0; y < canvas.height; y += FOG_TILE_SIZE) {
+            for (let x = 0; x < canvas.width; x += FOG_TILE_SIZE) {
+                if ((Math.floor(x / FOG_TILE_SIZE) + Math.floor(y / FOG_TILE_SIZE)) % 2 === 0) {
+                    context.fillStyle = "#000";
+                    context.fillRect(x, y, FOG_TILE_SIZE, FOG_TILE_SIZE);
+                }
+            }
+        }
+
+        // const setFogCenter = function (fogCenter) {
+        //     canvas.style.setProperty("--fog-center-x", `${fogCenter[0]}px`);
+        //     canvas.style.setProperty("--fog-center-y", `${fogCenter[1]}px`);
+        // };
+
         containerNode.appendChild(canvas);
     }
 

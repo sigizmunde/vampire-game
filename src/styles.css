@@ -41,6 +41,31 @@ body {
     overflow: hidden;
 }
 
+.fog-of-war {
+    --fog-center-x: 50%;
+    --fog-center-y: 50%;
+    --fog-radius: 120px;
+
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    mask-image: radial-gradient(
+        circle var(--fog-radius) at var(--fog-center-x) var(--fog-center-y),
+        transparent 0,
+        transparent var(--fog-radius),
+        black calc(var(--fog-radius) + 1px)
+    );
+    -webkit-mask-image: radial-gradient(
+        circle var(--fog-radius) at var(--fog-center-x) var(--fog-center-y),
+        transparent 0,
+        transparent var(--fog-radius),
+        black calc(var(--fog-radius) + 1px)
+    );
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+}
+
 /* #flightArea {
     transform-origin: center;
     transform: perspective(800px) rotateX(50deg) rotateZ(-10deg) skewX(5deg);

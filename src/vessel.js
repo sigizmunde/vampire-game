@@ -74,6 +74,7 @@ export class Vessel {
         this.destroyed = { cause };
     }
 
+    // updates vessel state and return vessel coordinates
     update(deltaTime, collisionBoundaries) {
         if (this.destroyed) {
             return null;
@@ -94,6 +95,8 @@ export class Vessel {
         if (this.energy <= 0) {
             this.destroyVessel("discharge");
         }
+
+        return [this.position.x, this.position.y];
     }
 
     checkCollisions(collisionBoundaries) {

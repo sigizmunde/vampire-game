@@ -164,9 +164,12 @@ export class Game {
     }
 
     update(deltaTime) {
+        const vesselCoordsArray = [];
         for (const vessel of this.vessels) {
-            vessel.update(deltaTime, this.boundaries);
+            const coords = vessel.update(deltaTime, this.boundaries);
+            vesselCoordsArray.push(coords);
         }
+        this.renderer.setFogCenter(vesselCoordsArray[0] || [-300, -300]);
     }
 
     render() {
