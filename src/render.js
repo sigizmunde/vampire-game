@@ -20,12 +20,19 @@ const BUILDING_SCALE = 2;
 const FOG_TILE_SIZE = 2;
 
 export class Render {
+    static #instance = null;
+
     constructor(nodeId, gameInstance = null) {
+        if (Render.#instance) {
+            return Render.#instance; // Returns the existing instance transparently
+        }
+
         this.nodeId = nodeId;
         this.objects = [];
         this.matrixSize = [10, 10]; // Default size, can be adjusted
         this.gameInstance = gameInstance; // Render class will hold a reference to the Game instance (bidirectional reference)
         this.fogCenter = null;
+        Render.#instance = this;
     }
 
     setFogCenter([x, y]) {
