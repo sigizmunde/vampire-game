@@ -18,6 +18,7 @@ const COLOR_MAP = {
 const FOLIAGE_SCALE = 2;
 const BUILDING_SCALE = 2;
 const FOG_TILE_SIZE = 2;
+const FOG_RADIUS = 120;
 
 export class Render {
     static #instance = null;
@@ -31,16 +32,28 @@ export class Render {
         this.objects = [];
         this.matrixSize = [10, 10]; // Default size, can be adjusted
         this.gameInstance = gameInstance; // Render class will hold a reference to the Game instance (bidirectional reference)
-        this.fogCenter = null;
+        this.fogCenters = [];
+        this.fogRadius = FOG_RADIUS;
         Render.#instance = this;
     }
 
-    setFogCenter([x, y]) {
-        this.fogCenter = [x, y];
+    setFogCenters(pointsArray) {
+        this.fogCenters = pointsArray;
         const fogCanvas = document.getElementById("fog-of-war");
         if (fogCanvas) {
-            fogCanvas.style.setProperty("--fog-center-x", `${x}px`);
-            fogCanvas.style.setProperty("--fog-center-y", `${y}px`);
+            const gradients = [...this.fogCenters].map(
+                ([x, y]) => `
+            radial-gradient(
+                circle ${this.fogRadius}px at ${x}px ${y}px,
+                transparent 0,
+                transparent ${this.fogRadius}px,
+                black ${this.fogRadius + 1}px
+            )
+        `,
+            );
+
+            fogCanvas.style.maskImage = gradients.length ? gradients.join(", ") : "none";
+            fogCanvas.style.maskComposite = "intersect";
         }
     }
 
@@ -213,11 +226,6 @@ export class Render {
                 }
             }
         }
-
-        // const setFogCenter = function (fogCenter) {
-        //     canvas.style.setProperty("--fog-center-x", `${fogCenter[0]}px`);
-        //     canvas.style.setProperty("--fog-center-y", `${fogCenter[1]}px`);
-        // };
 
         containerNode.appendChild(canvas);
     }

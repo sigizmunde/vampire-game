@@ -50,7 +50,7 @@ body {
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    mask-image: radial-gradient(
+    /* mask-image: radial-gradient(
         circle var(--fog-radius) at var(--fog-center-x) var(--fog-center-y),
         transparent 0,
         transparent var(--fog-radius),
@@ -63,7 +63,7 @@ body {
         black calc(var(--fog-radius) + 1px)
     );
     mask-repeat: no-repeat;
-    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat; */
 }
 
 /* #flightArea {
