@@ -41,15 +41,17 @@ export class Render {
         this.fogCenters = pointsArray;
         const fogCanvas = document.getElementById("fog-of-war");
         if (fogCanvas) {
-            const gradients = [...this.fogCenters].map(
-                ([x, y]) => `
+            const gradients = [...this.fogCenters].map((point) =>
+                point
+                    ? `
             radial-gradient(
-                circle ${this.fogRadius}px at ${x}px ${y}px,
+                circle ${this.fogRadius}px at ${point[0]}px ${point[1]}px,
                 transparent 0,
                 transparent ${this.fogRadius}px,
                 black ${this.fogRadius + 1}px
             )
-        `,
+        `
+                    : "",
             );
 
             fogCanvas.style.maskImage = gradients.length ? gradients.join(", ") : "none";

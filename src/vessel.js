@@ -6,16 +6,28 @@ const SLOWDOWN_FACTOR = 2.9; // higher number leads to "bouncier" adjustment on 
 const VELOCITY_THRESHOLD = 1.5;
 
 export class Vessel {
-    constructor({ position: [x, y], velocity: [dx, dy], id, energyConsumption, ...rest }) {
+    constructor({
+        type = "bomber",
+        position: [x, y],
+        velocity: [dx, dy],
+        id,
+        energyConsumption,
+        ...rest
+    }) {
         this.destroyed = null;
+        this.type = type; // 'bomber' | 'recon'
         this.position = { x, y };
         this.velocity = { dx, dy };
         this.id = id;
+        this.mission = null; // mission is an object of {point, task}, deletes when done
         this.maxVelocity = rest.maxVelocity || 500;
         this.acceleration = rest.acceleration || 10;
         this.diversionPoint = rest.diversionPoint || null;
         this.energy = 100; // percentage
         this.energyConsumption = energyConsumption || 5; // percent per second
+        this.energyToReturnHome = rest.energyToReturnHome || null;
+        this.homePoint = rest.homePoint || null;
+        this.schedule = rest.schedule || []; // array of drone missions in order earliest is last
     }
 
     setEnergy(percent) {
@@ -80,6 +92,15 @@ export class Vessel {
             return null;
         }
 
+        if (this.awaitTime) {
+            this.awaitTime = Math.max(this.awaitTime - deltaTime, 0);
+            if (this.awaitTime === 0 && this.schedule?.length) {
+                this.mission = this.schedule.pop();
+                this.diversionPoint = this.mission?.point;
+            }
+            return null;
+        }
+
         this.velocity.dx *= DECAY_FACTOR ** deltaTime;
         this.velocity.dy *= DECAY_FACTOR ** deltaTime;
         this.position.x += this.velocity.dx * deltaTime;
@@ -121,7 +142,13 @@ export class Vessel {
     }
 
     render() {
-        const vesselElement = document.getElementById(this.id);
+        const vesselElement =
+            document.getElementById(this.id) ||
+            createHtmlElement(document.getElementById("flightArea"), "div", {
+                class: `vessel ${this.type}`,
+                id: this.id,
+                style: { backgroundColor: "white", minWidth: "30px", minHeight: "30px" },
+            });
         if (vesselElement) {
             if (this.destroyed) {
                 this.renderWreckage(vesselElement);

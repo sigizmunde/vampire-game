@@ -5,6 +5,7 @@ import { Vessel } from "./vessel";
 const DEFAULT_FOLIAGE_DENSITY = 0.25;
 const DEFAULT_BUILDINGS_DENSITY = 0.02;
 const LINE_CLEARANCE = 3;
+const MAVIC_COUNT = 3;
 
 export class Game {
     constructor({ boundaries } = {}) {
@@ -27,8 +28,24 @@ export class Game {
         const matrix = this.generateSceneMatrix();
         this.renderer.convertMatrixToObjects(matrix);
         this.renderer.renderScene();
-        const vessel = new Vessel({ position: [100, 100], velocity: [50, 0], id: "vesselNode" });
+        const vessel = new Vessel({
+            type: "bomber",
+            position: [100, 100],
+            velocity: [50, 0],
+            id: "bomber_0",
+        });
         this.addVessel(vessel);
+
+        // creating recon drones
+        for (let m = 0; m < MAVIC_COUNT; m++) {
+            const mavic = new Vessel({
+                type: "recon",
+                position: [100 * m, 100 + 50 * m],
+                velocity: [Math.random() * 50, Math.random() * 50],
+                id: `mavicVessel_${m}`,
+            });
+            this.vessels.push(mavic);
+        }
 
         // creating enemies on start
         for (let i = 0; i < 5; i++) {
@@ -166,10 +183,12 @@ export class Game {
     update(deltaTime) {
         const vesselCoordsArray = [];
         for (const vessel of this.vessels) {
-            const coords = vessel.update(deltaTime, this.boundaries);
+            const coords = vessel.destroyed
+                ? [-300, -300]
+                : vessel.update(deltaTime, this.boundaries);
             vesselCoordsArray.push(coords);
         }
-        const vesselsOnMap = [vesselCoordsArray[0] || [-300, -300]];
+        const vesselsOnMap = vesselCoordsArray;
         this.renderer.setFogCenters(vesselsOnMap);
     }
 
